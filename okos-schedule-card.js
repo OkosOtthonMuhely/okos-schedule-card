@@ -27,7 +27,9 @@ function parse(s) {
   return s.trim().split(/\s+/).map((tok) => {
     const [t, c] = tok.split('/');
     return { t: /^\d{1,2}:\d\d$/.test(t || '') ? norm(t) : null, c: parseFloat(c) };
-  }).filter((x) => x.t && !isNaN(x.c)).sort((a, b) => toMin(a.t) - toMin(b.t));
+  }).filter((x) => x.t && !isNaN(x.c)).sort((a, b) => toMin(a.t) - toMin(b.t))
+    // Az eszköz a nem használt helyeket az utolsó átmenet ismétlésével tölti fel (pl. 22:00/16 ×7): ezeket egybevonjuk.
+    .filter((x, i, arr) => i === 0 || x.t !== arr[i - 1].t);
 }
 const serialize = (rows) =>
   rows.slice().sort((a, b) => toMin(a.t) - toMin(b.t)).map((r) => `${norm(r.t)}/${r.c}`).join(' ');
@@ -286,4 +288,4 @@ window.customCards.push({
   description: 'Grafikus heti ütemező Zigbee2MQTT termosztátokhoz (HH:mm/hőfok szöveges entitások).',
 });
 
-console.info('%c OKOS-SCHEDULE-CARD %c v1.0.0 ', 'color:#fff;background:#e8590c;font-weight:700', 'color:#e8590c;background:#fff;font-weight:700');
+console.info('%c OKOS-SCHEDULE-CARD %c v1.0.1 ', 'color:#fff;background:#e8590c;font-weight:700', 'color:#e8590c;background:#fff;font-weight:700');
